@@ -36,6 +36,7 @@ public class Main {
 
 			/* The output file name */
 			String outputFileName = properties.getProperty("result.name");
+			int character_spacing = Integer.parseInt(properties.getProperty("character.spacing"));
 
 			/* For each site merge the files in the correct order */
 			for(String site : sites) {
@@ -52,8 +53,8 @@ public class Main {
 					boolean broke = false;
 					for(File file : listOfFiles){
 						String tempsite = site.toLowerCase();
-						if(site.length() > 20){
-							tempsite = site.substring(0,20).toLowerCase();
+						if(site.length() > character_spacing){
+							tempsite = site.substring(0,character_spacing).toLowerCase();
 						}
 						if(file.getName().toLowerCase().contains(tempsite)){
 							files.add(file.getAbsolutePath());
