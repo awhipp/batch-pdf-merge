@@ -34,13 +34,13 @@ public class Main {
 			properties.load(is);
 			is.close();
 
-			/* The number of files that will be merged */
-			int numberOfFiles = Integer.parseInt(properties.getProperty("number.of.files"));
 			/* The output file name */
 			String outputFileName = properties.getProperty("result.name");
 
 			/* For each site merge the files in the correct order */
 			for(String site : sites) {
+				/* The number of files that will be merged */
+				int numberOfFiles = Integer.parseInt(properties.getProperty("number.of.files"));
 				currentOutfile = outputFileName + site + ".pptx";
 				int numNulls = 0;
 				/* Grab the path to each of the site's files */
@@ -50,6 +50,7 @@ public class Main {
 					File[] listOfFiles = folder.listFiles();
 
 					boolean broke = false;
+					System.out.println(listOfFiles.length);
 					for(File file : listOfFiles){
 						if(file.getName().contains(site)){
 							files.add(file.getAbsolutePath());
