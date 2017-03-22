@@ -50,7 +50,6 @@ public class Main {
 					File[] listOfFiles = folder.listFiles();
 
 					boolean broke = false;
-					System.out.println(listOfFiles.length);
 					for(File file : listOfFiles){
 						if(file.getName().contains(site)){
 							files.add(file.getAbsolutePath());
