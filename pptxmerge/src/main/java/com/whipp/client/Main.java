@@ -51,7 +51,11 @@ public class Main {
 
 					boolean broke = false;
 					for(File file : listOfFiles){
-						if(file.getName().contains(site)){
+						String tempsite = site.toLowerCase();
+						if(site.length() > 20){
+							tempsite = site.substring(0,20).toLowerCase();
+						}
+						if(file.getName().toLowerCase().contains(tempsite)){
 							files.add(file.getAbsolutePath());
 							broke = true;
 							break;
@@ -129,7 +133,7 @@ public class Main {
 
 				/* Creating the file object */
 				/* saving the changes to the file */
-				System.out.println("SUCCESS: " + site);
+				System.out.println("SUCCESS: " + site + " ("+(numberOfFiles-numNulls)+")");
 				if(document.isOpen()){
 					document.close();
 				}
