@@ -4,12 +4,15 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.RectangleReadOnly;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
@@ -72,30 +75,43 @@ public class Main {
 				PdfReader[] sources = new PdfReader[numberOfFiles];
 				for(int i = 0; i < numberOfFiles; i++){
 					if(files.get(i) != null){
-						System.out.println("Reading: " + files.get(i));
 						sources[i] = new PdfReader(files.get(i));
 					}else{
 						sources[i] = null;
 					}
 				}
+				
 				document.open();
 				PdfContentByte cb = writer.getDirectContent();
+				BaseFont bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
 				PdfImportedPage page;
+				int currPage = 0;
 				for(String command : ordering){
-					/* 0-based indeces */
 					int fileIdx = Integer.parseInt(command.split(":")[0]) - 1;
 					int startSlide = Integer.parseInt(command.split(":")[1].split("-")[0]);
 					int endSlide = Integer.parseInt(command.split(":")[1].split("-")[1]);
+					boolean skipFirst = false;
+					if(command.split(":")[1].split("-").length == 3){
+						skipFirst = true;
+					}
 					if(sources[fileIdx] != null){
 						PdfReader pdfToImport = sources[fileIdx];
 						for(int i = startSlide; i <= endSlide; i++){
+							currPage++;
 							Rectangle r = pdfToImport.getPageSize(pdfToImport.getPageN(i));
 							document.setPageSize(new RectangleReadOnly(r.getWidth(),r.getHeight()));
 							document.newPage();
 							page = writer.getImportedPage(pdfToImport, i);
-							System.out.println(page.getRole().toString()+"=");
-							System.out.println(cb.getPdfDocument().isOpen()+"-");
 							cb.addTemplate(page, 0, 0);
+							if(!skipFirst || i != startSlide){
+								cb.saveState();
+								cb.beginText();
+								cb.moveText(30, 30);
+								cb.setFontAndSize(bf, 12);
+								cb.showText(String.valueOf(currPage));
+								cb.endText();
+								cb.restoreState();
+							}
 						}
 					}
 				}
