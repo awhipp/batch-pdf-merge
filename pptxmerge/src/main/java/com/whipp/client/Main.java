@@ -67,7 +67,13 @@ public class Main {
 					System.out.println("Skipping: " + site + " no files available");
 					continue;
 				}
-				/* Create the output powerpoint */
+				
+				if(properties.getProperty("filler.included") != null){
+					files.add("filler.pdf");
+					numberOfFiles++;
+				}
+				
+				/* Create the output PDF */
 				Document document = new Document();
 				PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream( "output/" + outputFileName + " " + site + ".pdf" ));
 
@@ -87,7 +93,12 @@ public class Main {
 				PdfImportedPage page;
 				int currPage = 0;
 				for(String command : ordering){
-					int fileIdx = Integer.parseInt(command.split(":")[0]) - 1;
+					int fileIdx;
+					if(command.split(":")[0].equalsIgnoreCase("f")){
+						fileIdx = numberOfFiles - 1;
+					}else{
+						fileIdx = Integer.parseInt(command.split(":")[0]) - 1;
+					}
 					int startSlide = Integer.parseInt(command.split(":")[1].split("-")[0]);
 					int endSlide = Integer.parseInt(command.split(":")[1].split("-")[1]);
 					boolean skipFirst = false;
@@ -118,7 +129,7 @@ public class Main {
 
 				/* Creating the file object */
 				/* saving the changes to the file */
-				System.out.println("Merging done successfully for: " + site);
+				System.out.println("SUCCESS: " + site);
 				if(document.isOpen()){
 					document.close();
 				}
@@ -128,7 +139,7 @@ public class Main {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Merge Failed for: " + currentOutfile);
+			System.out.println("--FAILURE: " + currentOutfile);
 			e.printStackTrace(); 
 		}
 
